@@ -1,0 +1,29 @@
+def compute_metrics(G):
+    return {
+        'degree_centrality': nx.degree_centrality(G),
+        'betweenness_centrality': nx.betweenness_centrality(G),
+        'closeness_centrality': nx.closeness_centrality(G),
+        'eigenvector_centrality': nx.eigenvector_centrality(G)
+    }
+
+def detect_communities(G):
+    return list(community.greedy_modularity_communities(G))
+
+# === main.py ===
+from src.graph_utils import load_graph, plot_graph, compute_metrics, detect_communities
+
+if __name__ == '__main__':
+    G = load_graph('data/slumdog_network.csv')
+    plot_graph(G, path_to_save='output/network_plot.png')
+    metrics = compute_metrics(G)
+    communities = detect_communities(G)
+
+    print("\nCentrality Metrics:")
+    for name, values in metrics.items():
+        print(f"\n{name.title().replace('_', ' ')}:")
+        for node, value in sorted(values.items(), key=lambda x: x[1], reverse=True):
+            print(f"  {node}: {value:.3f}")
+
+    print("\nDetected Communities:")
+    for i, comm in enumerate(communities, 1):
+        print(f"  Community {i}: {list(comm)}")
